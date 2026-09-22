@@ -1,0 +1,253 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma-sqlserver"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("SQLSERVER_URL")
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String    @db.NVarChar(Max)
+  name         String
+  role         String    @default("editor")
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  fileId    String?
+  fileName  String
+  url       String   @db.NVarChar(Max)
+  mimeType  String?
+  size      Int?
+  width     Int?
+  height    Int?
+  alt       String?
+  folder    String?
+  createdAt DateTime @default(now())
+}
+
+model Room {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  number         String?
+  type           String?
+  shortDesc      String?  @db.NVarChar(Max)
+  longDesc       String?  @db.NVarChar(Max)
+  price          String?
+  currency       String?  @default("ر.ي")
+  capacity       Int?
+  beds           Int?
+  featuresJson   String?  @db.NVarChar(Max)
+  coverUrl       String?  @db.NVarChar(Max)
+  galleryJson    String?  @db.NVarChar(Max)
+  status         String   @default("draft")
+  sortOrder      Int      @default(0)
+  seoTitle       String?
+  seoDescription String?  @db.NVarChar(Max)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Service {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  shortName      String?
+  desc           String?  @db.NVarChar(Max)
+  longDesc       String?  @db.NVarChar(Max)
+  category       String?
+  iconKey        String?
+  coverUrl       String?  @db.NVarChar(Max)
+  galleryJson    String?  @db.NVarChar(Max)
+  price          String?
+  hours          String?
+  featuresJson   String?  @db.NVarChar(Max)
+  sortOrder      Int      @default(0)
+  status         String   @default("draft")
+  seoTitle       String?
+  seoDescription String?  @db.NVarChar(Max)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Facility {
+  id        String   @id @default(cuid())
+  title     String
+  text      String?  @db.NVarChar(Max)
+  iconKey   String?
+  imageUrl  String?  @db.NVarChar(Max)
+  sortOrder Int      @default(0)
+  status    String   @default("published")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Offer {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  title       String
+  desc        String?   @db.NVarChar(Max)
+  price       String?
+  prevPrice   String?
+  coverUrl    String?   @db.NVarChar(Max)
+  startDate   DateTime?
+  endDate     DateTime?
+  details     String?   @db.NVarChar(Max)
+  ctaLabel    String?
+  ctaHref     String?   @db.NVarChar(Max)
+  badge       String?
+  iconKey     String?
+  sortOrder   Int       @default(0)
+  status      String    @default("draft")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model GalleryAlbum {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  name      String
+  desc      String?       @db.NVarChar(Max)
+  coverUrl  String?       @db.NVarChar(Max)
+  sortOrder Int           @default(0)
+  status    String        @default("published")
+  items     GalleryItem[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model GalleryItem {
+  id        String       @id @default(cuid())
+  albumId   String
+  album     GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  mediaUrl  String       @db.NVarChar(Max)
+  caption   String?
+  isVideo   Boolean      @default(false)
+  sortOrder Int          @default(0)
+  createdAt DateTime     @default(now())
+
+  @@index([albumId])
+}
+
+model HeroSlide {
+  id        String   @id @default(cuid())
+  fileId    String?
+  mediaUrl  String   @db.NVarChar(Max)
+  caption   String?
+  link      String?  @db.NVarChar(Max)
+  sortOrder Int      @default(0)
+  status    String   @default("published")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HomeSection {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  eyebrow    String?
+  title      String?
+  text       String?  @db.NVarChar(Max)
+  sortOrder  Int      @default(0)
+  visible    Boolean  @default(true)
+  configJson String?  @db.NVarChar(Max)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Page {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  description    String?  @db.NVarChar(Max)
+  heroImageUrl   String?  @db.NVarChar(Max)
+  content        String?  @db.NVarChar(Max)
+  status         String   @default("published")
+  seoTitle       String?
+  seoDescription String?  @db.NVarChar(Max)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model NavItem {
+  id        String   @id @default(cuid())
+  label     String
+  href      String   @db.NVarChar(Max)
+  sortOrder Int      @default(0)
+  visible   Boolean  @default(true)
+  location  String   @default("header")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String?  @db.NVarChar(Max)
+  updatedAt DateTime @updatedAt
+}
+
+model SeoPage {
+  id              String   @id @default(cuid())
+  pageSlug        String   @unique
+  metaTitle       String?
+  metaDescription String?  @db.NVarChar(Max)
+  keywords        String?  @db.NVarChar(Max)
+  ogImageUrl      String?  @db.NVarChar(Max)
+  canonical       String?  @db.NVarChar(Max)
+  noIndex         Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  text      String   @db.NVarChar(Max)
+  rating    Int      @default(5)
+  status    String   @default("pending")
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BookingRequest {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  type      String?
+  guests    Int?
+  date      String?
+  message   String?  @db.NVarChar(Max)
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  subject   String?
+  message   String?  @db.NVarChar(Max)
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  summary   String?  @db.NVarChar(Max)
+  createdAt DateTime @default(now())
+
+  @@index([entity])
+}

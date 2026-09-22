@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma-postgres"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String
+  name         String
+  role         String    @default("editor")
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  fileId    String?
+  fileName  String
+  url       String
+  mimeType  String?
+  size      Int?
+  width     Int?
+  height    Int?
+  alt       String?
+  folder    String?
+  createdAt DateTime @default(now())
+}
+
+model Room {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  number         String?
+  type           String?
+  shortDesc      String?
+  longDesc       String?  @db.Text
+  price          String?
+  currency       String?  @default("ر.ي")
+  capacity       Int?
+  beds           Int?
+  featuresJson   String?  @db.Text
+  coverUrl       String?
+  galleryJson    String?  @db.Text
+  status         String   @default("draft")
+  sortOrder      Int      @default(0)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Service {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  shortName      String?
+  desc           String?
+  longDesc       String?  @db.Text
+  category       String?
+  iconKey        String?
+  coverUrl       String?
+  galleryJson    String?  @db.Text
+  price          String?
+  hours          String?
+  featuresJson   String?  @db.Text
+  sortOrder      Int      @default(0)
+  status         String   @default("draft")
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Facility {
+  id        String   @id @default(cuid())
+  title     String
+  text      String?
+  iconKey   String?
+  imageUrl  String?
+  sortOrder Int      @default(0)
+  status    String   @default("published")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Offer {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  title       String
+  desc        String?
+  price       String?
+  prevPrice   String?
+  coverUrl    String?
+  startDate   DateTime?
+  endDate     DateTime?
+  details     String?   @db.Text
+  ctaLabel    String?
+  ctaHref     String?
+  badge       String?
+  iconKey     String?
+  sortOrder   Int       @default(0)
+  status      String    @default("draft")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model GalleryAlbum {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  name      String
+  desc      String?
+  coverUrl  String?
+  sortOrder Int           @default(0)
+  status    String        @default("published")
+  items     GalleryItem[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model GalleryItem {
+  id        String       @id @default(cuid())
+  albumId   String
+  album     GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  mediaUrl  String
+  caption   String?
+  isVideo   Boolean      @default(false)
+  sortOrder Int          @default(0)
+  createdAt DateTime     @default(now())
+
+  @@index([albumId])
+}
+
+model HeroSlide {
+  id        String   @id @default(cuid())
+  fileId    String?
+  mediaUrl  String   @db.Text
+  caption   String?
+  link      String?
+  sortOrder Int      @default(0)
+  status    String   @default("published")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HomeSection {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  eyebrow    String?
+  title      String?
+  text       String?
+  sortOrder  Int      @default(0)
+  visible    Boolean  @default(true)
+  configJson String?  @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Page {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  description    String?
+  heroImageUrl   String?
+  content        String?  @db.Text
+  status         String   @default("published")
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model NavItem {
+  id        String   @id @default(cuid())
+  label     String
+  href      String
+  sortOrder Int      @default(0)
+  visible   Boolean  @default(true)
+  location  String   @default("header")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String?  @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+model SeoPage {
+  id              String   @id @default(cuid())
+  pageSlug        String   @unique
+  metaTitle       String?
+  metaDescription String?
+  keywords        String?
+  ogImageUrl      String?
+  canonical       String?
+  noIndex         Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  text      String   @db.Text
+  rating    Int      @default(5)
+  status    String   @default("pending")
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BookingRequest {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  type      String?
+  guests    Int?
+  date      String?
+  message   String?  @db.Text
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  subject   String?
+  message   String?  @db.Text
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  summary   String?
+  createdAt DateTime @default(now())
+
+  @@index([entity])
+}
