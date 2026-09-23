@@ -4,6 +4,7 @@ import { cairo } from "./fonts";
 import { CardGlow } from "@/components/CardGlow";
 import { MobileBottomBar } from "@/components/MobileBottomBar";
 import { SiteWhatsApp } from "@/components/SiteWhatsApp";
+import { SiteAdminShortcut } from "@/components/SiteAdminShortcut";
 import { ServiceWorker } from "@/components/ServiceWorker";
 import { getSettings } from "@/lib/site-content";
 
@@ -74,6 +75,7 @@ export default function RootLayout({
         <CardGlow />
         <MobileBottomBar />
         <SiteWhatsApp />
+        <SiteAdminShortcut />
         <ServiceWorker />
       </body>
     </html>

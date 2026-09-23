@@ -111,6 +111,10 @@ export function Sidebar({
             <small>{role === "superadmin" ? "المدير" : role === "admin" ? "مدير" : "محرر"}</small>
           </span>
         </div>
+        <Link className="adminViewSite" href="/" onClick={onClose}>
+          <Globe size={18} strokeWidth={1.8} />
+          عرض الموقع
+        </Link>
         <nav>
           {groups.map((g) => (
             <div key={g.title}>
